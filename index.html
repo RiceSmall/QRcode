@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body img {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="qrcode"></div>
+  <hr/>
+  <canvas id="myCanvas" width="200" height="200"></canvas>
+  <hr/>
+  <img id="canvasImg" alt="" width="200" height="200">
+
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utf.js"></script>
+  <script type="text/javascript" src="js/qrcode.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#qrcode").qrcode({
+        render : 'canvas',    //设置渲染方式，有table和canvas，使用canvas方式渲染性能相对来说比较好
+        text : "https://github.com/RiceSmall/QRcode",    //扫描二维码后显示的内容,可以直接填一个网址，扫描二维码后自动跳向该链接
+        width : "200",               //二维码的宽度
+        height : "200",              //二维码的高度
+        background : "#ffffff",       //二维码的后景色
+        foreground : "#000000"       //二维码的前景色
+      });
+
+      function creatEwm(base64, canvas, callback) {
+        var ctx = canvas.getContext("2d");
+        var img = document.createElement('img');
+        // img.setAttribute("crossOrigin",'Anonymous')
+        img.src = 'img/photo.jpg'
+        img.onload = function () {
+          var imgUpload = new Image();
+          imgUpload.src = base64();
+          imgUpload.onload = function () {
+            // 绘制
+            ctx.drawImage(imgUpload, 0, 0, 200, 200);
+            ctx.drawImage(img, 78, 80, 40, 40);
+            callback(canvas.toDataURL("image/jpeg"))
+          };
+        }
+      }
+
+      function convertCanvasToImage() {
+        var canvas = $("#qrcode canvas")[0].toDataURL("image/jpeg")
+        return canvas
+      }
+
+      creatEwm(convertCanvasToImage, document.getElementById('myCanvas'), function (dataUrl) {
+        document.getElementById("canvasImg").src = dataUrl
+      })
+    });
+  </script>
+</body>
+</html>
